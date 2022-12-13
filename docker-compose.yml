@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  load_balancer:
+    container_name: cont_load_balancer
+    image: nginx:latest
+    volumes:
+      - ./nginx/load-balancer.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - application_1
+      - application_2
+      - application_3
+    ports:
+      - '8080:80'
+    networks:
+      - internalnet
+  application_1:
+    container_name: cont_application_1
+    build: ./application
+    image: app:v1
+    ports:
+      - '3001:3000'
+    environment:
+      SERVER_PORT: '3001'
+      SERVER_THEME: 'bg-app1'
+      DB_HOST: 'database'
+      DB_USER: 'admin'
+      DB_PASSWORD: 'admin'
+      DB_NAME: 'db_app'
+      DB_CONNECTION_LIMIT: '20'
+    depends_on:
+      - database
+      - caching_system
+    networks:
+      - internalnet
+
+  application_2:
+    container_name: cont_application_2
+    build: ./application
+    image: app:v1
+    ports:
+      - '3002:3000'
+    environment:
+      SERVER_PORT: '3002'
+      SERVER_THEME: 'bg-app2'
+      DB_HOST: 'database'
+      DB_USER: 'admin'
+      DB_PASSWORD: 'admin'
+      DB_NAME: 'db_app'
+      DB_CONNECTION_LIMIT: '20'
+    depends_on:
+      - database
+      - caching_system
+    networks:
+      - internalnet
+
+  application_3:
+    container_name: cont_application_3
+    build: ./application
+    image: app:v1
+    ports:
+      - '3003:3000'
+    environment:
+      SERVER_PORT: '3003'
+      SERVER_THEME: 'bg-app3'
+      DB_HOST: 'database'
+      DB_USER: 'admin'
+      DB_PASSWORD: 'admin'
+      DB_NAME: 'db_app'
+      DB_CONNECTION_LIMIT: '20'
+    depends_on:
+      - database
+      - caching_system
+    networks:
+      - internalnet
+
+  database:
+    image: mysql:8.0
+    container_name: cont_database
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/0_init.sql
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    environment:
+      MYSQL_DATABASE: db_app
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+    networks:
+      - internalnet
+
+  database_management_system:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: cont_database_management_system
+    restart: unless-stopped
+    environment:
+      PMA_HOST: 'database'
+      PMA_PORT: '3306'
+    ports:
+      - '8081:80'
+    depends_on:
+      - database
+    networks:
+      - internalnet
+
+  caching_system:
+    image: redis:7.0
+    container_name: cont_caching_system
+    restart: unless-stopped
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - '6379:6379'
+    expose:
+      - '6379'
+    networks:
+      - internalnet
+
+networks:
+  internalnet:
+    driver: bridge
