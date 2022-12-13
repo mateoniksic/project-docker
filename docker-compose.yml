@@ -14,6 +14,7 @@ services:
       - '8080:80'
     networks:
       - internalnet
+
   application_1:
     container_name: cont_application_1
     build: ./application
