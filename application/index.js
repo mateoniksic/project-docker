@@ -3,7 +3,6 @@ const EJS = require('ejs');
 const EXPRESS = require('express');
 const DATABASE = require('./database/database.config');
 const REDIS = require('redis');
-const { promisify } = require('util');
 
 // CONSTANTS
 const SERVER_PORT = process.env.SERVER_PORT;
