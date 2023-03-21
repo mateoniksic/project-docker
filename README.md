@@ -1,4 +1,4 @@
-![Social Preview](https://user-images.githubusercontent.com/57192709/226372150-b24a3afe-ba05-4ae1-b912-78eecbb07455.png)
+![Social Preview](https://user-images.githubusercontent.com/57192709/226619840-aa0cd1a6-491d-4386-b0fd-dcd86b91d503.png)
 
 # What is project docker?
 Project docker is a setup that connects the following services:
